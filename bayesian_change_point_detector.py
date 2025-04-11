@@ -133,3 +133,26 @@ def run_chain():
 samples = run_chain()
 changepoint_samples = samples[0].numpy()
 print(changepoint_samples) 
+
+
+plt.figure(figsize=(12, 6))
+plt.plot(data.index, data['Close'], label='Close Price')
+if changepoint_samples.ndim > 1:
+    for i in range(min(5, changepoint_samples.shape[1])):
+        cp_locations = changepoint_samples[:, i]
+        mean_location = int(np.mean(cp_locations))
+        plt.axvline(x=data.index[mean_location], color='r', linestyle='--', alpha=0.5)
+plt.title(f'{SYMBOL} Price with Detected Changepoints')
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.legend()
+plt.show()
+
+# Print summary statistics
+print("Mean changepoint locations (indices):")
+if changepoint_samples.ndim > 1:
+    for i in range(min(5, changepoint_samples.shape[1])):
+        mean_loc = int(np.mean(changepoint_samples[:, i]))
+        print(f"Changepoint {i+1}: {mean_loc} (Date: {data.index[mean_loc]})")
+else:
+    print("No changepoints detected or sampling failed")
